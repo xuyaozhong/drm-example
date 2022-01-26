@@ -52,6 +52,9 @@ int list_resources(const char *dri_device)
         return -EINVAL;
     }
 
+
+    drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+
     res = drmModeGetResources(fd);
     if (!res) {
         printf("Could not get drm resources\n");
@@ -59,9 +62,9 @@ int list_resources(const char *dri_device)
     }
 
     printf("connectors:");
+
     for (int i = 0; i < res->count_connectors; i++) {
         drmModeConnectorPtr connector = 0;
-        drmModeEncoderPtr encoder = 0;
 
         printf("\nNumber: %d ", res->connectors[i]);
         connector = drmModeGetConnectorCurrent(fd, res->connectors[i]);
@@ -70,17 +73,9 @@ int list_resources(const char *dri_device)
 
         printf("Name: %s-%u ", connector_type_name(connector->connector_type), connector->connector_type_id);
 
-        printf("Encoder: %d ", connector->encoder_id);
-
-        encoder = drmModeGetEncoder(fd, connector->encoder_id);
-        if (!encoder)
-            continue;
-
-        printf("Crtc: %d", encoder->crtc_id);
-
-        drmModeFreeEncoder(encoder);
         drmModeFreeConnector(connector);
     }
+
 
     printf("\nFramebuffers: ");
     for (int i = 0; i < res->count_fbs; i++) {

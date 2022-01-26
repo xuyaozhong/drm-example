@@ -125,6 +125,7 @@ int get_framebuffer(const char *dri_device, const char *connector_name, struct f
         err = -EINVAL;
         goto cleanup;
     }
+    printf("resolution->vdisplay = %d , resolution->hdisplay = %d \n",resolution->vdisplay,resolution->hdisplay);
 
     fb->dumb_framebuffer.height = resolution->vdisplay;
     fb->dumb_framebuffer.width = resolution->hdisplay;
@@ -143,7 +144,8 @@ int get_framebuffer(const char *dri_device, const char *connector_name, struct f
         goto cleanup;
     }
 
-    encoder = drmModeGetEncoder(fd, connector->encoder_id);
+    printf("res->encoders[0] = %d \n",  res->encoders[0]);
+    encoder = drmModeGetEncoder(fd, res->encoders[0]);
     if (!encoder) {
         printf("Could not get encoder\n");
         err = -EINVAL;
@@ -151,7 +153,7 @@ int get_framebuffer(const char *dri_device, const char *connector_name, struct f
     }
 
     /* Get the crtc settings */
-    fb->crtc = drmModeGetCrtc(fd, encoder->crtc_id);
+    fb->crtc = drmModeGetCrtc(fd, res->crtcs[0]);
 
     struct drm_mode_map_dumb mreq;
 
