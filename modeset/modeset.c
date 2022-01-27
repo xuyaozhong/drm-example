@@ -612,7 +612,7 @@ static void modeset_draw(void)
 	b = rand() % 0xff;
 	r_up = g_up = b_up = true;
 
-	for (i = 0; i < 50; ++i) {
+	for (i = 0; i < 50000; ++i) {
 		r = next_color(&r_up, r, 20);
 		g = next_color(&g_up, g, 10);
 		b = next_color(&b_up, b, 5);

@@ -1,1 +1,0 @@
-/opt/poky-agl/4.99.2/sysroots/x86_64-aglsdk-linux/usr/bin/aarch64-agl-linux/aarch64-agl-linux-gcc   --sysroot=/opt/poky-agl/4.99.2/sysroots/aarch64-agl-linux --sysroot=/opt/poky-agl/4.99.2/sysroots/aarch64-agl-linux  -O2 -pipe  -Wl,-O1 CMakeFiles/updatedraw.dir/updatedraw.o CMakeFiles/updatedraw.dir/drmtest.o  -o updatedraw -rdynamic -ldrm 
