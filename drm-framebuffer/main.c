@@ -25,6 +25,8 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <libdrm/drm.h>
+#include <drm/drm_fourcc.h>
+#include "libdrm.h"
 
 #include "framebuffer.h"
 
@@ -38,7 +40,6 @@ static void usage(void)
             "  -r get resolution dri device and connector needs to be set\n"
             "  -h show this message\n\n");
 }
-
 
 int list_resources(const char *dri_device)
 {
@@ -166,8 +167,10 @@ error:
 
 void fill_framebuffer_from_stdin(struct framebuffer *fb)
 {
-    size_t total_read = 0;
 
+    //while(1)
+    {
+    size_t total_read = 0;
     while (total_read < fb->dumb_framebuffer.size)
         total_read += read(STDIN_FILENO, &fb->data[total_read], fb->dumb_framebuffer.size - total_read);
 
@@ -176,15 +179,23 @@ void fill_framebuffer_from_stdin(struct framebuffer *fb)
     drmModeSetCrtc(fb->fd, fb->crtc->crtc_id, 0, 0, 0, NULL, 0, NULL);
     drmModeSetCrtc(fb->fd, fb->crtc->crtc_id, fb->buffer_id, 0, 0, &fb->connector->connector_id, 1, fb->resolution);
     drmDropMaster(fb->fd);
-
+    printf("in loop\n");
+    }
     sigset_t wait_set;
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
     sigemptyset(&wait_set);
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
     sigaddset(&wait_set, SIGTERM);
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
     sigaddset(&wait_set, SIGINT);
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
 
     int sig;
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
     sigprocmask(SIG_BLOCK, &wait_set, NULL );
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
     sigwait(&wait_set, &sig);
+    printf("%s,%d\n",__FUNCTION__,__LINE__);
 }
 
 int main(int argc, char** argv)

@@ -3,7 +3,7 @@
 #${PROJECT_BINARY_DIR}/lib
 #)
 
-set(drm-framebuffer "drm-framebuffer")
+set(updatedraw "updatedraw")
 
 if($ENV{SDKTARGETSYSROOT} MATCHES "aarch64-agl-linux")
         SET(CMAKE_SYSROOT "$ENV{SDKTARGETSYSROOT}")
@@ -24,5 +24,5 @@ MESSAGE(STATUS "cmake sysroot :${CMAKE_SYSROOT}")
 
 aux_source_directory(. SOURCE_DIR)
 
-add_executable(${drm-framebuffer} main.c framebuffer.c buffers.c)
-target_link_libraries(${drm-framebuffer} libdrm.so.2)
+add_executable(${updatedraw} updatedraw.c drmtest.c)
+target_link_libraries(${updatedraw} libdrm.so.2)

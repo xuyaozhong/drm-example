@@ -1,0 +1,3 @@
+/4T/proj/github/johnxu/drm-framebuffer/arm/CMakeFiles/edit_cache.dir
+/4T/proj/github/johnxu/drm-framebuffer/arm/CMakeFiles/rebuild_cache.dir
+/4T/proj/github/johnxu/drm-framebuffer/arm/CMakeFiles/drm-framebuffer.dir

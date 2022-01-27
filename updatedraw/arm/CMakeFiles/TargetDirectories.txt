@@ -1,0 +1,3 @@
+/4T/proj/github/johnxu/updatedraw/arm/CMakeFiles/edit_cache.dir
+/4T/proj/github/johnxu/updatedraw/arm/CMakeFiles/rebuild_cache.dir
+/4T/proj/github/johnxu/updatedraw/arm/CMakeFiles/updatedraw.dir
