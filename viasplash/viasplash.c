@@ -11,6 +11,8 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include "lodepng.h"
+
 struct disp_dev {
 	struct disp_dev *next;
 
@@ -29,6 +31,7 @@ struct disp_dev {
 };
 
 static struct disp_dev *disp_list = NULL;
+static uint8_t* bg = NULL;
 
 static int find_encoder_crtc(int fd, drmModeRes *res, drmModeConnector *conn,
 			     struct disp_dev *dev);
@@ -281,11 +284,28 @@ err_destroy:
 }
 
 
+char* decodepng(const char* filename) {
+  unsigned error;
+  unsigned char* image = 0;
+  unsigned width, height;
+
+  error = lodepng_decode32_file(&image, &width, &height, filename);
+  if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+  printf("%s, width = %d, height = %d \n",filename, width ,height);
+
+  return image;
+}
+
+
 int main(int argc, char **argv)
 {
 	int ret, fd;
 	const char *card;
 	struct disp_dev *dlptr;
+
+	const char* filename = argc > 1 ? argv[1] : "bg.png";
+
+	bg = decodepng(filename);
 
 	/* check which DRM device to open */
 	card = "/dev/dri/card0";
@@ -319,6 +339,7 @@ int main(int argc, char **argv)
 
 out_close:
 	close(fd);
+	free(bg);
 out_return:
 	if (ret) {
 		errno = -ret;
@@ -385,23 +406,34 @@ static void draw_progressbar(void)
 
         progress = 0;
 
+
+
         for (i = 0; i < 50000; ++i) {
 
+		if(progress == 0)
+		{	
+        		for (dlptr = disp_list; dlptr; dlptr = dlptr->next) {
+				printf("dlptr->width =%d \n",dlptr->width);
+				printf("dlptr->height =%d \n",dlptr->height);
+				printf("dlptr->stride =%d \n",dlptr->stride);
+				memcpy(dlptr->map,bg, 1920*1080*4);
+        		}
+		}
 	
-		printf("progress  = %d\n", progress);	
                 for (dlptr = disp_list; dlptr; dlptr = dlptr->next) {
                         for (j = 900; j < dlptr->height - 100; ++j) {
                                 //for (k = 0; k < dlptr->width; ++k) {
                                 for (k = 0; k < progress; ++k) {
                                         off = dlptr->stride * j + k * 4;
-                                        *(uint32_t*)&dlptr->map[off] = 0xffffff;
+                                        *(uint32_t*)&dlptr->map[off] = 0xcc4488;
                                 }
                         }
+			progress++ ;
+			progress = progress % dlptr->width;
                 }
 
-		progress++ ;
-//		progress = progress % dlptr->width;
-                usleep(100000);
+                //usleep(100000);
+                usleep(10000);
         }
 }
 
