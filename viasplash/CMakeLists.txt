@@ -20,6 +20,6 @@ aux_source_directory(. SOURCE_DIR)
 
 add_definitions(-DLODEPNG_COMPILE_DISK)
 
-add_executable(${viasplash} viasplash.c lodepng.c)
+add_executable(${viasplash} viasplash.c lodepng.c font.c font2img.c)
 add_executable(${example_decode} example_decode.c lodepng.c)
 target_link_libraries(${viasplash} libdrm.so.2)

@@ -13,6 +13,8 @@
 
 #include "lodepng.h"
 
+#include "font.h"
+#include "font2img.h"
 struct disp_dev {
 	struct disp_dev *next;
 
@@ -269,8 +271,7 @@ static int create_dumb_buffer(int fd, struct disp_dev *dev)
 		goto err_fb;
 	}
 
-	/* clear the framebuffer to 0 */
-	memset(dev->map, 0, dev->size);
+	memset(dev->map, 0x80, dev->size);
 
 	return 0;
 
@@ -351,52 +352,6 @@ out_return:
 }
 
 
-static uint8_t next_color(bool *up, uint8_t cur, unsigned int mod)
-{
-	uint8_t next;
-
-	next = cur + (*up ? 1 : -1) * (rand() % mod);
-	if ((*up && next < cur) || (!*up && next > cur)) {
-		*up = !*up;
-		next = cur;
-	}
-
-	return next;
-}
-
-
-static void drawimage(void)
-{
-	uint8_t r, g, b;
-	bool r_up, g_up, b_up;
-	unsigned int i, j, k, off;
-	struct disp_dev *dlptr;
-
-	srand(time(NULL));
-	r = rand() % 0xff;
-	g = rand() % 0xff;
-	b = rand() % 0xff;
-	r_up = g_up = b_up = true;
-
-	for (i = 0; i < 50000; ++i) {
-		r = next_color(&r_up, r, 20);
-		g = next_color(&g_up, g, 10);
-		b = next_color(&b_up, b, 5);
-
-		for (dlptr = disp_list; dlptr; dlptr = dlptr->next) {
-			for (j = 900; j < dlptr->height - 100; ++j) {
-				for (k = 0; k < dlptr->width; ++k) {
-					off = dlptr->stride * j + k * 4;
-					*(uint32_t*)&dlptr->map[off] =
-						     (r << 16) | (g << 8) | b;
-				}
-			}
-		}
-
-		usleep(100000);
-	}
-}
-
 static void draw_progressbar(void)
 {
         uint8_t r, g, b;
@@ -406,7 +361,9 @@ static void draw_progressbar(void)
 
         progress = 0;
 
-
+	r = 0xcc;
+	g = 0x44;
+	b = 0x88;
 
         for (i = 0; i < 50000; ++i) {
 
@@ -417,6 +374,21 @@ static void draw_progressbar(void)
 				printf("dlptr->height =%d \n",dlptr->height);
 				printf("dlptr->stride =%d \n",dlptr->stride);
 				memcpy(dlptr->map,bg, 1920*1080*4);
+
+				/*render char */
+				char c;
+				int cx = 100; int cy =100;
+				for(c = ' '; c < 127 ; c++ )
+				{
+					rendercharonscreen32(dlptr->map,1920,1080,c, cx,cy, 0xff);
+					cx += 100;
+					if(cx > 1800)
+					{
+						cx = 100;
+						cy += 100;
+					}
+				}
+				c++;
         		}
 		}
 	
@@ -425,7 +397,7 @@ static void draw_progressbar(void)
                                 //for (k = 0; k < dlptr->width; ++k) {
                                 for (k = 0; k < progress; ++k) {
                                         off = dlptr->stride * j + k * 4;
-                                        *(uint32_t*)&dlptr->map[off] = 0xcc4488;
+                                        *(uint32_t*)&dlptr->map[off] = (r << 16) | (g << 8) | b;
                                 }
                         }
 			progress++ ;
