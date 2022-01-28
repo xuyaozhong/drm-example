@@ -11,7 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 
-int rendercharonscreen32(uint8_t* screen, int screenw, int screenh, char c, int x_l, int y_top, uint32_t color);
+int rendercharonscreen32(uint8_t* screen, int screenw, int screenh, char c, int x_l, int y_top, uint32_t color, int scale);
 
 
 #endif

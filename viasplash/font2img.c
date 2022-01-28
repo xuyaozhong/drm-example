@@ -3,7 +3,6 @@
 
 extern struct bitmap_font font;
 
-
 char* debug_char[] = {
 " ________ ",
 " _______X ",
@@ -264,44 +263,52 @@ char* debug_char[] = {
 };
 
 
-int rendercharonscreen32(uint8_t* screen, int screenw, int screenh, char c, int x_l, int y_top, uint32_t color)
+
+int rendercharonscreen32(uint8_t* screen, int screenw, int screenh, char c, int x_l, int y_top, uint32_t color, int scale)
 {
 	unsigned w,h;
-	uint32_t topleft,offset;
+	uint32_t topleft, hoffset,scaleoffset;
 
         if(c < 32 || c > 126)
                 return -1;
         w = font.Widths[c];
         h = font.Height;
 
-	printf("w = %d,h = %d\n",w, h);
+//	printf("w = %d,h = %d\n",w, h);
 	
         unsigned char *bitmap = font.Bitmap + c * font.Height;
 
 
-	for(int i = 0; i < font.Height ; i++)
-	{
-		printf("%s\n", debug_char[bitmap[i]]);
-	}
+//	for(int i = 0; i < font.Height ; i++)
+//	{
+//		printf("%s\n", debug_char[bitmap[i]]);
+//	}
 
 	topleft =  y_top * screenw * 4 + x_l * 4;
 	
-	printf("topleft = %d\n",topleft);
-
         int j = 0, k = 0;
         for(j = 0; j < font.Height; j++)
         {
-		printf("%s ", debug_char[bitmap[j]]);
+//		printf("%s ", debug_char[bitmap[j]]);
                 for(k = 0; k < font.Width; k++)
                 {
+			
                         if( bitmap[j] & (0x80 >> k))
                         {
-				offset = topleft + j * screenw * 4 + k * 4; // start point (top,left) + offset in bitmap font 
 		
-                                *(uint32_t*)&screen[ offset ] = color;
+				hoffset = topleft + k * 4 * scale; // start point (top,left) + scale offset in bitmap font 
+				for(int tmpsv = 0; tmpsv <  scale ; tmpsv++) // vertical scale
+				{
+					scaleoffset = hoffset + ( screenw * 4 ) * tmpsv;
+					for(int tmpsh = 0; tmpsh <  scale ; tmpsh++) //horizontal scale
+					{
+                                		*(uint32_t*)&screen[scaleoffset + tmpsh * 4] = color;
+					}
+				}
                         }
                 }
-		printf("\n");
+		topleft += screenw * 4 * scale;
+//		printf("\n");
         }
 	return 0;
 }

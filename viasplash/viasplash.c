@@ -15,6 +15,7 @@
 
 #include "font.h"
 #include "font2img.h"
+
 struct disp_dev {
 	struct disp_dev *next;
 
@@ -378,17 +379,22 @@ static void draw_progressbar(void)
 				/*render char */
 				char c;
 				int cx = 100; int cy =100;
-				for(c = ' '; c < 127 ; c++ )
+				for(int scale = 1; scale < 7; scale++)
 				{
-					rendercharonscreen32(dlptr->map,1920,1080,c, cx,cy, 0xff);
-					cx += 100;
-					if(cx > 1800)
+					for(c = '!'; c < 127 ; c++ )
 					{
-						cx = 100;
-						cy += 100;
+						rendercharonscreen32(dlptr->map,1920,1080,c, cx,cy, 0xff0000 , scale);
+						cx += 8 * scale;
+						if(cx > 1800)
+						{
+							cx = 100;
+							cy += 16 * scale;
+						}
 					}
+			
+					cx = 100;
+					cy += 16 * scale;
 				}
-				c++;
         		}
 		}
 	
